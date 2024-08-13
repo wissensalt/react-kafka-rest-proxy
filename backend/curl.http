@@ -1,0 +1,21 @@
+POST http://localhost:9191/send
+Accept: application/json
+Content-Type: application/json
+
+{
+  "key": "4",
+  "value": "4"
+}
+
+###
+
+GET http://localhost:9000/greeting/fauzi
+Accept: application/json
+
+###
+
+GET http://localhost:9000/
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Cache-Control: none
+
+###
