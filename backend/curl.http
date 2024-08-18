@@ -3,8 +3,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "key": "4",
-  "value": "4"
+  "key": "two",
+  "value": "two"
 }
 
 ###

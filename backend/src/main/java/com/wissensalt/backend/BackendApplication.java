@@ -48,7 +48,7 @@ public class BackendApplication {
 		return new Payload("abc", name);
 	}
 
-	@KafkaListener(topics = "topic-one", groupId = "backend-consumer-group")
+	@KafkaListener(topics = "topic-two", groupId = "backend-consumer-group")
 	public void listen(String message) {
 		log.info("Received Message in group backend-consumer-group: {}", message);
 	}

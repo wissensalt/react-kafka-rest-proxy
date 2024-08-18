@@ -1,7 +1,6 @@
 import {useEffect, useState} from "react";
 
 function App() {
-    const [data, setData] = useState(null);
     const POLLING_INTERVAL: number = 2000; // Poll every 2 seconds
     const RECREATE_POLLING_INTERVAL: number = 5000; // Poll every 5 seconds
     const consumerGroup: string = 'frontend-consumer-group';
@@ -14,6 +13,8 @@ function App() {
     const payloadCreateConsumerInstance = {name: consumerInstance, format: 'json', 'auto.offset.reset': 'earliest'};
     const [isEnableConsume, setIsEnableConsume] = useState(false);
     const [output, setOutput] = useState<Array<string> | []>([])
+    const SUBSCRIBED_TOPIC: string = 'topic-one';
+    const PUBLISH_TOPIC: string = 'topic-two';
 
     useEffect(() => {
         const fetchData = async (): Promise<void> => {
@@ -73,7 +74,7 @@ function App() {
                                     'Accept': headerAccept,
                                     'Content-Type': headerContentType
                                 },
-                                body: JSON.stringify({topics: ['topic-one',]})
+                                body: JSON.stringify({topics: [SUBSCRIBED_TOPIC,]})
                             }).then(
                                 async (response) => {
                                     console.log("LOG RESPONSE subscribe: ", response);
@@ -96,12 +97,12 @@ function App() {
                                         'Accept': headerAccept,
                                         'Content-Type': headerContentType
                                     },
-                                    body: JSON.stringify({topics: ['topic-one',]})
+                                    body: JSON.stringify({topics: [SUBSCRIBED_TOPIC,]})
                                 }).then(
                                     async (response) => {
                                         console.log("LOG RESPONSE subscribe: ", response);
                                         if (response.status === 204) {
-                                            console.log("Subscribed to topic successfully");
+                                            console.log("Subscribed to topic "+SUBSCRIBED_TOPIC+" successfully");
                                             setIsEnableConsume(true);
                                         } else {
                                             console.error("Error subscribing to topic", response);
@@ -122,11 +123,44 @@ function App() {
 
     }, [isEnableConsume]);
 
+    function publish(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const formData: FormData = new FormData(e.currentTarget);
+        const message: File | string = formData.get('message');
+        if (message) {
+            const records = {records: [{value: message}]};
+            console.log("Publishing message: ", records)
+            fetch('http://localhost:8082/topics/'+PUBLISH_TOPIC, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': headerContentType,
+                },
+                body: JSON.stringify(records),
+            }).then(response => {
+                if (response.status === 200) {
+                    console.log('Message published successfully');
+                } else {
+                    console.error('Error publishing message');
+                }
+            });
+        }
+    }
+
     return (
         <>
             <div>
                 <h1>Fetched Data</h1>
                 <pre>{JSON.stringify(output, null, 2)}</pre>
+            </div>
+            <div>
+                <h1>Publish Data</h1>
+                <form onSubmit={(e) => publish(e)}>
+                    <label>
+                        Message:
+                        <input type="text" name="message"/>
+                    </label>
+                    <button type="submit">Publish</button>
+                </form>
             </div>
         </>
     )
